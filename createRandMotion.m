@@ -5,9 +5,18 @@ function [randImg1 randImg2] = createRandMotion( numFrames, matSize )
 % two matrices correspond to left and right motion.
 
 
-% define some noise
+% define some noise, limit to within 2 sd
 randNoise1 = randn(matSize);
 randNoise2 = randn(matSize);
+
+% tested - requires only betwee 3-5 iterations to complete each loop
+while sum( sum( randNoise1 >= 2 ) ) ~= 0
+    randNoise1( randNoise1 >= 2 ) = randn([ 1 length( find( randNoise1 >= 2 ) ) ]);
+end
+
+while sum( sum( randNoise2 >= 2 ) ) ~= 0
+    randNoise2( randNoise2 >= 2 ) = randn([ 1 length( find( randNoise2 >= 2 ) ) ]);
+end
 
 % generate gaussian mesh
 [Cx Cy] = meshgrid(-3:0.3:3);
