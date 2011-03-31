@@ -1,13 +1,13 @@
-clear
-close all
+function [randImg1 randImg2] = createRandMotion( numFrames, matSize )
+% function [randImg1 randImg2] = createRandMotion( numFrames, matSize )
+%
+% Create two numFrames x matSize x matSize directional noise matrices. The
+% two matrices correspond to left and right motion.
+
 
 % define some noise
-noiseSize = 400;
-randNoise1 = randn(noiseSize);
-randNoise2 = randn(noiseSize);
-
-% set to 1 to have a movie recorded
-takeVid = 0;
+randNoise1 = randn(matSize);
+randNoise2 = randn(matSize);
 
 % generate gaussian mesh
 [Cx Cy] = meshgrid(-3:0.3:3);
@@ -25,7 +25,7 @@ Gd  = Gd (1:size(Gd ,1)-2,1:size(Gd,2)-1);
 Gdd = Gdd(2:size(Gdd,1)-1,:);
 
 % combine plots using eq 1 of paper, convolve with noise
-t = pi/180:pi/90:2*pi;
+t = linspace( pi/180, 2*pi, numFrames );
 len_t = length(t);
 img = zeros([len_t, size(Gdd)]);
 for n=1:len_t
@@ -38,17 +38,9 @@ randImg2 = randImg1;
 for n=1:len_t
     % we need motion in both directions; randNoise1 goes left, randNoise2
     % goes right
-    randImg1(n,:,:) = conv2( randNoise1, squeeze(img(n,:,:)), 'same' );
-    randImg2(n,:,:) = conv2( randNoise2, squeeze(img(len_t+1-n,:,:)), 'same' );
-end
-
-
-
-figure();
-colormap(gray);
-for m=1:3
-    for n=1:len_t
-        imagesc(squeeze(randImg1(n,:,:)) + squeeze(randImg2(n,:,:)));
-        pause(0.005);
-    end
+    img1 = conv2( randNoise1, squeeze(img(n,:,:)), 'same' );
+    img2 = conv2( randNoise2, squeeze(img(len_t+1-n,:,:)), 'same' );
+    
+    randImg1(n,:,:) = img1;
+    randImg2(n,:,:) = img2;
 end
